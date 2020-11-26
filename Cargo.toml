@@ -8,4 +8,4 @@ edition = "2018"
 
 [dependencies]
 websocket = "0.24.0"
-
+serialport = "3.3.0"
