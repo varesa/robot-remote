@@ -1,0 +1,79 @@
+<html>
+    <head>
+        <script type="text/javascript">
+            const http_url = window.location.href.match(/([a-z]+):\/\/([^/]+)(.*)/);
+            const ws = new WebSocket("ws://" + http_url[2] + ":2794", ["robot-control"]);
+            ws.binaryType= 'arraybuffer';
+
+            ws.addEventListener('open', (event) => {
+                console.log('connected');
+            });
+
+            ws.addEventListener('message', (event) => {
+                console.log('Message', event);
+            });
+
+            let dx = 0;
+            let dy = 0;
+
+            function update() {
+                let cmd = 0x00;
+                if (dy > 0) {
+                    cmd = 0x11;
+                } 
+                if (dy < 0) {
+                    cmd = 0x22;
+                }
+                if (dx < 0) {
+                    cmd = 0x12;
+                }
+                if (dx > 0) {
+                    cmd = 0x21;
+                }
+                console.log(dx, dy);
+
+           
+                //ws.send(JSON.stringify({'cmd': 0xAA}));
+
+                let array = new Uint8Array(1);
+                array[0] = cmd;
+                ws.send(array.buffer);
+            }
+
+            document.onkeydown = (e) =>  {
+                if (e.key == "ArrowLeft") {
+                    dx = -1;
+                }
+                if (e.key == "ArrowRight") {
+                    dx = 1;
+                }
+                if (e.key == "ArrowDown") {
+                    dy = -1;
+                }
+                if (e.key == "ArrowUp") {
+                    dy = 1;
+                }
+                update();
+            };
+
+            document.onkeyup = (e) => {
+                if (e.key == "ArrowLeft") {
+                    dx = 0;
+                }
+                if (e.key == "ArrowRight") {
+                    dx = 0;
+                }
+                if (e.key == "ArrowDown") {
+                    dy = 0;
+                }
+                if (e.key == "ArrowUp") {
+                    dy = 0;
+                }
+                update();
+            };
+        </script>
+    </head>
+    <body>
+        Hello world
+    </body>
+</html>
